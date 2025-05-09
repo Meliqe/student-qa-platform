@@ -55,13 +55,19 @@ const QuestionSchema = new mongoose.Schema({
 });
 
 // Create question slug from the title
-QuestionSchema.pre('save', function(next) {
-  if (this.isModified('title')) {
-    this.slug = slugify(this.title, {
-      lower: true,
-      strict: true
-    });
+QuestionSchema.pre('save', async function (next) {
+  if (!this.isModified('title')) return next();
+
+  const baseSlug = slugify(this.title, { lower: true, strict: true });
+  let slug = baseSlug;
+  let counter = 1;
+
+  // Benzersiz slug bulana kadar dene
+  while (await this.constructor.findOne({ slug })) {
+    slug = `${baseSlug}-${counter++}`;
   }
+
+  this.slug = slug;
   next();
 });
 

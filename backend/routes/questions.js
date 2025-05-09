@@ -38,7 +38,6 @@ router
 router
   .route('/:id')
   .get(getQuestion)
-  .put(cookieMiddleware,csrfProtection,protect, questionValidation, updateQuestion)
   .delete(cookieMiddleware,csrfProtection,protect, deleteQuestion);
 
 router.put('/:id/upvote', cookieMiddleware,csrfProtection,protect, upvoteQuestion);

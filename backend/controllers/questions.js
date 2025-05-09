@@ -175,37 +175,6 @@ exports.createQuestion = async (req, res, next) => {
 // @desc    Update question
 // @route   PUT /api/questions/:id
 // @access  Private
-exports.updateQuestion = async (req, res, next) => {
-  try {
-    let question = await Question.findById(req.params.id);
-
-    if (!question) {
-      return next(new ErrorResponse("Question not found", 404));
-    }
-
-    // Make sure user is question owner
-    if (
-      question.author.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
-      return next(
-        new ErrorResponse("Not authorized to update this question", 401)
-      );
-    }
-
-    question = await Question.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    res.status(200).json({
-      success: true,
-      data: question,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
 
 // @desc    Delete question
 // @route   DELETE /api/questions/:id
