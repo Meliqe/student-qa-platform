@@ -72,7 +72,7 @@ QuestionSchema.pre('save', async function (next) {
 });
 
 // Cascade delete answers when a question is deleted
-QuestionSchema.pre('remove', async function(next) {
+QuestionSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
   await this.model('Answer').deleteMany({ question: this._id });
   next();
 });

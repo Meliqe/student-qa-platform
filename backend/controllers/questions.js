@@ -197,7 +197,7 @@ exports.deleteQuestion = async (req, res, next) => {
       );
     }
 
-    await question.remove();
+    await question.deleteOne();
 
     res.status(200).json({
       success: true,
