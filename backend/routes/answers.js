@@ -11,14 +11,13 @@ const {
 
 const { protect, authorize } = require('../middleware/auth');
 const { answerValidation } = require('../middleware/validators');
-const upload = require('../middleware/upload');
 
 const router = express.Router({ mergeParams: true });
 
 router
   .route('/')
   .get(getAnswers)
-  .post(cookieMiddleware,csrfProtection,protect,upload.single('image'), answerValidation, addAnswer);
+  .post(cookieMiddleware,csrfProtection,protect, answerValidation, addAnswer);
 
 router
   .route('/:id')

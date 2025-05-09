@@ -27,9 +27,6 @@ const QuestionSchema = new mongoose.Schema({
       message: 'Please add between 1 and 5 tags'
     }
   },
-  imageUrls: {
-    type: [String]
-  },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

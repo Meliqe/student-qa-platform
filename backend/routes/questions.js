@@ -13,7 +13,6 @@ const {
 
 const { protect, authorize } = require('../middleware/auth');
 const { questionValidation } = require('../middleware/validators');
-const upload = require('../middleware/upload');
 // Include other resource routers
 const answerRouter = require('./answers');
 
@@ -34,7 +33,7 @@ router.get('/slug/:slug', getQuestionBySlug);
 router
   .route('/')
   .get(getQuestions)
-  .post(cookieMiddleware,csrfProtection,protect,upload.single('image'), questionValidation, createQuestion);
+  .post(cookieMiddleware,csrfProtection,protect,questionValidation, createQuestion);
 
 router
   .route('/:id')
