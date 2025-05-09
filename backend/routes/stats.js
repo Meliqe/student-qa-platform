@@ -4,7 +4,7 @@ const {
   updateSession,
   endSession
 } = require('../controllers/stats');
-
+const { csrfProtection, cookieMiddleware } = require('../middleware/csrf');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();

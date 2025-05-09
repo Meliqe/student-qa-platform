@@ -11,6 +11,7 @@ const {
 
 const { protect, authorize } = require('../middleware/auth');
 const { answerValidation } = require('../middleware/validators');
+const { csrfProtection, cookieMiddleware } = require('../middleware/csrf');
 
 const router = express.Router({ mergeParams: true });
 

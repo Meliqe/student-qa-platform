@@ -10,7 +10,7 @@ const {
   getTags,
   searchQuestions
 } = require('../controllers/questions');
-
+const { csrfProtection, cookieMiddleware } = require('../middleware/csrf');
 const { protect, authorize } = require('../middleware/auth');
 const { questionValidation } = require('../middleware/validators');
 // Include other resource routers

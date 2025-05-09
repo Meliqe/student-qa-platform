@@ -7,7 +7,6 @@ const {
   updateUser,
   deleteUser
 } = require('../controllers/users');
-
 const { protect, authorize } = require('../middleware/auth');
 const { cookieMiddleware, csrfProtection } = require('../middleware/csrf');
 
