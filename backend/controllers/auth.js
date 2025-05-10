@@ -1,5 +1,6 @@
 const User = require('../models/User');
 
+const UserSession = require('../models/UserSession');
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
@@ -78,6 +79,27 @@ exports.getMe = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: user
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+exports.logout = async (req, res, next) => {
+  try {
+    // 1. Session'ı kapat (user offline)
+    await UserSession.findOneAndUpdate(
+      { user: req.user.id },
+      { isOnline: false }
+    );
+
+    // 2. (Opsiyonel) CSRF token cookie’si varsa temizle
+    res.clearCookie('_csrf');
+
+    res.status(200).json({
+      success: true,
+      message: 'Successfully logged out.'
     });
   } catch (err) {
     next(err);
