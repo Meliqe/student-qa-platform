@@ -3,9 +3,10 @@ const {
   getUsers,
   getUser,
   getUserProfile,
-  createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUserQuestions,
+  getUserAnswers
 } = require('../controllers/users');
 const { protect, authorize } = require('../middleware/auth');
 const { cookieMiddleware, csrfProtection } = require('../middleware/csrf');
@@ -13,7 +14,9 @@ const { cookieMiddleware, csrfProtection } = require('../middleware/csrf');
 const router = express.Router();
 
 // Public
-router.get('/profile/:username', getUserProfile);
+router.get('/profile/:username',protect,getUserProfile);
+router.get('/:id/my-questions',protect, getUserQuestions);
+router.get('/:id/my-answers',protect,getUserAnswers);
 
 // Protected – Admin only
 router.use(protect);

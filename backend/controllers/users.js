@@ -129,3 +129,38 @@ exports.deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getUserQuestions = async(req,res,next)=>{
+  try{
+    const userId = req.params.id;
+
+    const questions = await Question.find({ author: userId }).sort('-createdAt');
+
+    res.status(200).json({
+      success: true,
+      count: questions.length,
+      data: questions
+    });
+  } catch(err)
+  {
+    next(err);
+  }
+};
+
+exports.getUserAnswers= async(req,res,next)=>{
+  try {
+    const userId = req.params.id;
+
+    const answers = await Answer.find({ author: userId })
+      .populate('question', 'title slug')
+      .sort('-createdAt');
+
+    res.status(200).json({
+      success: true,
+      count: answers.length,
+      data: answers
+    });
+  } catch (err) {
+    next(err)
+  }
+};
