@@ -110,7 +110,7 @@ exports.deleteAnnouncement = async (req, res, next) => {
       });
     }
 
-    await announcement.remove();
+    await announcement.deleteOne();
 
     res.status(200).json({
       success: true,

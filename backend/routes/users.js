@@ -20,11 +20,10 @@ router.use(protect);
 router.use(authorize('admin'));
 
 
-router.get('/', getUsers);
+router.get('/', getUsers); 
 router.get('/:id', getUser);
 
 // POST / PUT / DELETE – CSRF ile korunmalı
-router.post('/', cookieMiddleware, csrfProtection, createUser);
 router.put('/:id', cookieMiddleware, csrfProtection, updateUser);
 router.delete('/:id', cookieMiddleware, csrfProtection, deleteUser);
 

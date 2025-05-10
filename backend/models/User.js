@@ -61,4 +61,46 @@ UserSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+UserSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+  const userId = this._id;
+  const User = mongoose.model('User');
+  const Question = mongoose.model('Question');
+  const Answer = mongoose.model('Answer');
+  const Vote = mongoose.model('Vote');
+  const UserSession = mongoose.model('UserSession');
+  const Announcement = mongoose.model('Announcement');
+
+  const user = await User.findById(userId);
+  const isAdmin = user?.role === 'admin';
+
+  // 1. Kullanıcının oy verdiği tüm Vote kayıtlarını bul
+  const votes = await Vote.find({ user: userId });
+
+  // 2. Oy verdiği objelerin upvote sayılarını düşür
+  for (const vote of votes) {
+    if (vote.refType === 'Question') {
+      await Question.findByIdAndUpdate(vote.refId, { $inc: { upvotes: -1 } });
+    } else if (vote.refType === 'Answer') {
+      await Answer.findByIdAndUpdate(vote.refId, { $inc: { upvotes: -1 } });
+    }
+  }
+
+  // 3. Diğer bağlı içerikleri sil
+  const deletions = [
+    Question.deleteMany({ author: userId }),
+    Answer.deleteMany({ author: userId }),
+    Vote.deleteMany({ user: userId }),
+    UserSession.deleteMany({ user: userId })
+  ];
+
+  if (isAdmin) {
+    deletions.push(Announcement.deleteMany({ createdBy: userId }));
+  }
+
+  await Promise.all(deletions);
+  next();
+});
+
+
+
 module.exports = mongoose.model('User', UserSchema);

@@ -78,21 +78,6 @@ exports.getUserProfile = async (req, res, next) => {
   }
 };
 
-// @desc    Create user
-// @route   POST /api/users
-// @access  Private/Admin
-exports.createUser = async (req, res, next) => {
-  try {
-    const user = await User.create(req.body);
-
-    res.status(201).json({
-      success: true,
-      data: user
-    });
-  } catch (err) {
-    next(err);
-  }
-};
 
 // @desc    Update user
 // @route   PUT /api/users/:id
@@ -134,7 +119,7 @@ exports.deleteUser = async (req, res, next) => {
       });
     }
 
-    await user.remove();
+    await user.deleteOne();
 
     res.status(200).json({
       success: true,
