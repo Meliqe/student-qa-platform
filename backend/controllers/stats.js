@@ -19,11 +19,7 @@ exports.getStats = async (req, res, next) => {
     const totalUsers = await User.countDocuments();
     
     // Get online users (active in the last 15 minutes)
-    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
-    const onlineUsers = await UserSession.countDocuments({
-      lastActive: { $gte: fifteenMinutesAgo },
-      isOnline: true
-    });
+    const onlineUsers = await UserSession.countDocuments({ isOnline: true });
     
     // Get most viewed questions
     const popularQuestions = await Question.find()
