@@ -88,15 +88,9 @@ exports.getMe = async (req, res, next) => {
 
 exports.logout = async (req, res, next) => {
   try {
-    // 1. Session'ı kapat (user offline)
-    await UserSession.findOneAndUpdate(
-      { user: req.user.id },
-      { isOnline: false }
-    );
 
-    // 2. (Opsiyonel) CSRF token cookie’si varsa temizle
     res.clearCookie('_csrf');
-
+    
     res.status(200).json({
       success: true,
       message: 'Successfully logged out.'
@@ -105,6 +99,7 @@ exports.logout = async (req, res, next) => {
     next(err);
   }
 };
+
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {

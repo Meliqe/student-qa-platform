@@ -6,7 +6,8 @@ const {
   updateUser,
   deleteUser,
   getUserQuestions,
-  getUserAnswers
+  getUserAnswers,
+  getOnlineUsers
 } = require('../controllers/users');
 const { protect, authorize } = require('../middleware/auth');
 const { cookieMiddleware, csrfProtection } = require('../middleware/csrf');
@@ -25,7 +26,7 @@ router.use(authorize('admin'));
 
 router.get('/', getUsers); 
 router.get('/:id', getUser);
-
+router.get('/online', getOnlineUsers);
 // POST / PUT / DELETE – CSRF ile korunmalı
 router.put('/:id', cookieMiddleware, csrfProtection, updateUser);
 router.delete('/:id', cookieMiddleware, csrfProtection, deleteUser);

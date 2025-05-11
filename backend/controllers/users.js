@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Question = require('../models/Question');
 const Answer = require('../models/Answer');
+const UserSession = require('../models/UserSession');
 
 // @desc    Get all users
 // @route   GET /api/users
@@ -164,3 +165,26 @@ exports.getUserAnswers= async(req,res,next)=>{
     next(err)
   }
 };
+
+// @desc    Get all currently online users
+// @route   GET /api/users/online
+// @access  Private/Admin
+exports.getOnlineUsers = async (req, res, next) => {
+  try {
+    const sessions = await UserSession.find({ isOnline: true }).populate('user', 'name email');
+
+    const onlineUsers = sessions.map(session => session.user);
+
+    res.status(200).json({
+      success: true,
+      count: onlineUsers.length,
+      data: onlineUsers
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+

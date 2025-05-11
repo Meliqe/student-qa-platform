@@ -1,15 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const path = require('path');
 const { csrfProtection, cookieMiddleware } = require('./middleware/csrf');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
-
+const http = require('http');
+const socketIO = require('socket.io');
+const socketAuth = require('./middleware/socketAuth');
 
 // Load env vars
 dotenv.config();
-
+io.use(socketAuth);
 // Connect to database
 connectDB();
 
@@ -23,6 +24,36 @@ const statsRoutes = require('./routes/stats');
 
 // Initialize app
 const app = express();
+
+const server = http.createServer(app); // WebSocket bu server üzerinden çalışacak
+const io = socketIO(server, {
+  cors: {
+    origin: process.env.CLIENT_URL || 'http://localhost:4200',
+    credentials: true,
+  },
+});
+
+io.on("connection", (socket) => {
+  const userId = socket.user._id;
+  if (userId) {
+    UserSession.findOneAndUpdate(
+      { user: userId },
+      { isOnline: true },
+      { upsert: true }
+    ).exec();
+  }
+
+  socket.on("disconnect", () => {
+    if (userId) {
+      UserSession.findOneAndUpdate(
+        { user: userId },
+        { isOnline: false }
+      ).exec();
+    }
+  });
+});
+
+
 
 // Body parser
 app.use(express.json());
@@ -51,7 +82,6 @@ app.use('/api/stats', statsRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Sunucu ${PORT} portunda çalışıyor`);
 });
