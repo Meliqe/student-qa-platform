@@ -10,7 +10,6 @@ const socketAuth = require('./middleware/socketAuth');
 
 // Load env vars
 dotenv.config();
-io.use(socketAuth);
 // Connect to database
 connectDB();
 
@@ -21,18 +20,19 @@ const answerRoutes = require('./routes/answers');
 const userRoutes = require('./routes/users');
 const announcementRoutes = require('./routes/announcements');
 const statsRoutes = require('./routes/stats');
-
+const visitRoutes = require('./routes/visit');
 // Initialize app
 const app = express();
 
 const server = http.createServer(app); // WebSocket bu server üzerinden çalışacak
+
 const io = socketIO(server, {
   cors: {
     origin: process.env.CLIENT_URL || 'http://localhost:4200',
     credentials: true,
   },
 });
-
+io.use(socketAuth);
 io.on("connection", (socket) => {
   const userId = socket.user._id;
   if (userId) {
@@ -76,7 +76,7 @@ app.use('/api/answers', answerRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/stats', statsRoutes);
-
+app.use('/api/visit',visitRoutes);
 
 // Error handler middleware
 app.use(errorHandler);
