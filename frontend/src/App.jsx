@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import 'react-quill/dist/quill.snow.css'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Login from './pages/Login'
