@@ -3,6 +3,10 @@ import Navbar from './components/Navbar'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Profile from './pages/Profile'
+import PrivateRoute from './components/PrivateRoute'
+import Questions from './pages/Questions'
+import QuestionDetail from './pages/QuestionDetail'
 
 function App() {
   return ( 
@@ -13,6 +17,16 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/questions" element={<Questions />} />
+          <Route path="/questions/:id" element={<QuestionDetail />} />
           </Routes>
         </div>
       </div>

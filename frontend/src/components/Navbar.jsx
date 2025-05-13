@@ -9,6 +9,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    localStorage.removeItem('csrfToken') // Varsa onu da temizle
     setUser(null)
     navigate('/')
   }
@@ -16,9 +17,10 @@ const Navbar = () => {
   return (
     <nav style={{ padding: '10px', borderBottom: '1px solid #ccc', marginBottom: '20px' }}>
       <Link to="/" style={{ marginRight: '15px' }}>Anasayfa</Link>
-
+      <Link to="/questions" style={{ marginRight: '15px' }}>Sorular</Link>
       {user ? (
         <span style={{ float: 'right' }}>
+          <Link to="/profile" style={{ marginRight: '10px' }}>Profilim</Link>
           Merhaba, {user.name} |
           <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
             Çıkış
