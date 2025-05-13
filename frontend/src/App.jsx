@@ -5,8 +5,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 
 function App() {
-  return (
-    <Router>
+  return ( 
       <div>
         <Navbar />
         <div style={{ padding: '20px' }}>
@@ -17,7 +16,6 @@ function App() {
           </Routes>
         </div>
       </div>
-    </Router>
   )
 }
 

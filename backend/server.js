@@ -28,7 +28,7 @@ const server = http.createServer(app); // WebSocket bu server üzerinden çalı�
 
 const io = socketIO(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:4200',
+    origin: process.env.CLIENT_URL || 'http://localhost:5173',
     credentials: true,
   },
 });
@@ -60,7 +60,7 @@ app.use(express.json());
 
 // Enable CORS
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:4200',
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 

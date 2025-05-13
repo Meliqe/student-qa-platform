@@ -1,11 +1,35 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useContext } from 'react'
+import { UserContext } from '../context/UserContext'
 
 const Navbar = () => {
+  const { user, setUser } = useContext(UserContext)
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
+    navigate('/')
+  }
+
   return (
     <nav style={{ padding: '10px', borderBottom: '1px solid #ccc', marginBottom: '20px' }}>
       <Link to="/" style={{ marginRight: '15px' }}>Anasayfa</Link>
-      <Link to="/login" style={{ marginRight: '10px' }}>Giriş Yap</Link>
-      <Link to="/register">Kayıt Ol</Link>
+
+      {user ? (
+        <span style={{ float: 'right' }}>
+          Merhaba, {user.name} |
+          <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
+            Çıkış
+          </button>
+        </span>
+      ) : (
+        <span style={{ float: 'right' }}>
+          <Link to="/login" style={{ marginRight: '10px' }}>Giriş Yap</Link>
+          <Link to="/register">Kayıt Ol</Link>
+        </span>
+      )}
     </nav>
   )
 }
