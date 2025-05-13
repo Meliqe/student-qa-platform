@@ -33,13 +33,13 @@ router.get('/slug/:slug', getQuestionBySlug);
 router
   .route('/')
   .get(getQuestions)
-  .post(cookieMiddleware,csrfProtection,protect,questionValidation, createQuestion);
+  .post(/*cookieMiddleware,csrfProtection,protect*/protect,questionValidation, createQuestion);
 
 router
   .route('/:id')
   .get(getQuestion)
-  .delete(cookieMiddleware,csrfProtection,protect, deleteQuestion);
+  .delete(/*cookieMiddleware,csrfProtection,protect*/protect, deleteQuestion);
 
-router.put('/:id/upvote', cookieMiddleware,csrfProtection,protect, upvoteQuestion);
+router.put('/:id/upvote', /*cookieMiddleware,csrfProtection,protect*/ protect, upvoteQuestion);
 
 module.exports = router;

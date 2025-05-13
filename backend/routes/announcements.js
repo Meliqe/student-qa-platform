@@ -15,12 +15,12 @@ const router = express.Router();
 router
   .route('/')
   .get(getAnnouncements)
-  .post(cookieMiddleware,csrfProtection,protect, authorize('admin'), announcementValidation, createAnnouncement);
+  .post(/*cookieMiddleware,csrfProtection,protect*/ authorize('admin'), announcementValidation, createAnnouncement);
 
 router
   .route('/:id')
   .get(getAnnouncement)
-  .put(cookieMiddleware,csrfProtection,protect, authorize('admin'), announcementValidation, updateAnnouncement)
-  .delete(cookieMiddleware,csrfProtection,protect, authorize('admin'), deleteAnnouncement);
+  .put(/*cookieMiddleware,csrfProtection,protect*/protect, authorize('admin'), announcementValidation, updateAnnouncement)
+  .delete(/*cookieMiddleware,csrfProtection,protect*/protect, authorize('admin'), deleteAnnouncement);
 
 module.exports = router;

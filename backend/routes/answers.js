@@ -18,16 +18,16 @@ const router = express.Router({ mergeParams: true });
 router
   .route('/')
   .get(getAnswers)
-  .post(cookieMiddleware,csrfProtection,protect, answerValidation, addAnswer);
+  .post(/*cookieMiddleware,csrfProtection,protect*/protect, answerValidation, addAnswer);
 
 router
   .route('/:id')
-  .put(cookieMiddleware,csrfProtection,protect, answerValidation, updateAnswer)
-  .delete(cookieMiddleware,csrfProtection,protect, deleteAnswer);
+  .put(/*cookieMiddleware,csrfProtection,protect*/protect, answerValidation, updateAnswer)
+  .delete(/*cookieMiddleware,csrfProtection,protect*/protect, deleteAnswer);
 
-router.put('/:id/upvote',cookieMiddleware,csrfProtection, protect, upvoteAnswer);
-router.put('/:id/best', cookieMiddleware,csrfProtection,protect, markBestAnswer);
+router.put('/:id/upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, upvoteAnswer);
+router.put('/:id/best', /*cookieMiddleware,csrfProtection,protect*/ markBestAnswer);
 
-router.delete('/:id/upvote',cookieMiddleware,csrfProtection, protect, removeAnswerUpvote);
+router.delete('/:id/upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, removeAnswerUpvote);
 
 module.exports = router;
