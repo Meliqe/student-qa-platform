@@ -69,7 +69,7 @@ exports.updateAnswer = async (req, res, next) => {
     answer = await Answer.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
-    });
+    }).populate('author', 'name');
 
     res.status(200).json({
       success: true,

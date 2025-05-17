@@ -94,12 +94,13 @@ exports.getQuestion = async (req, res, next) => {
         select: "name",
       })
       .populate({
-        path: "answers",
-        populate: {
-          path: "author",
-          select: "name",
-        },
-      });
+  path: "answers",
+  populate: {
+    path: "author",
+    select: "name _id", 
+  },
+});
+
 
     if (!question) {
       return next(new ErrorResponse("Question not found", 404));
@@ -171,10 +172,6 @@ exports.createQuestion = async (req, res, next) => {
     next(err);
   }
 };
-
-// @desc    Update question
-// @route   PUT /api/questions/:id
-// @access  Private
 
 // @desc    Delete question
 // @route   DELETE /api/questions/:id

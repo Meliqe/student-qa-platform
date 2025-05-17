@@ -131,9 +131,9 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
-exports.getUserQuestions = async(req,res,next)=>{
-  try{
-    const userId = req.params.id;
+exports.getUserQuestions = async (req, res, next) => {
+  try {
+    const userId = req.user.id; // Token'dan gelen kullanıcı ID
 
     const questions = await Question.find({ author: userId }).sort('-createdAt');
 
@@ -142,15 +142,14 @@ exports.getUserQuestions = async(req,res,next)=>{
       count: questions.length,
       data: questions
     });
-  } catch(err)
-  {
-    next(err);
+  } catch (err) {
+    next(err)
   }
-};
+}
 
-exports.getUserAnswers= async(req,res,next)=>{
+exports.getUserAnswers = async (req, res, next) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
 
     const answers = await Answer.find({ author: userId })
       .populate('question', 'title slug')
@@ -164,7 +163,8 @@ exports.getUserAnswers= async(req,res,next)=>{
   } catch (err) {
     next(err)
   }
-};
+}
+
 
 // @desc    Get all currently online users
 // @route   GET /api/users/online

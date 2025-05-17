@@ -17,9 +17,9 @@ const Login = () => {
       const loginRes = await API.post('/auth/login', { email, password })
 
       const { token, user } = loginRes.data
-
+      const fixedUser = { ...user, _id: user.id }
       localStorage.setItem('token', token)
-      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('user', JSON.stringify(fixedUser))
 
       setUser(user)
 

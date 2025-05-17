@@ -18,6 +18,8 @@ const Navbar = () => {
     <nav style={{ padding: '10px', borderBottom: '1px solid #ccc', marginBottom: '20px' }}>
       <Link to="/" style={{ marginRight: '15px' }}>Anasayfa</Link>
       <Link to="/questions" style={{ marginRight: '15px' }}>Sorular</Link>
+      {user && (
+  <Link to="/add-question" style={{ marginRight: '15px' }}>➕ Soru Sor</Link>)}
       {user ? (
         <span style={{ float: 'right' }}>
           <Link to="/profile" style={{ marginRight: '10px' }}>Profilim</Link>

@@ -16,8 +16,8 @@ const router = express.Router();
 
 // Public
 router.get('/profile/:username',protect,getUserProfile);
-router.get('/:id/my-questions',protect, getUserQuestions);
-router.get('/:id/my-answers',protect,getUserAnswers);
+router.get('/me/my-questions',protect, getUserQuestions);
+router.get('/me/my-answers',protect,getUserAnswers);
 
 // Protected – Admin only
 router.use(protect);
