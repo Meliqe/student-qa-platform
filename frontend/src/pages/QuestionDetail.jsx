@@ -70,6 +70,23 @@ const QuestionDetail = () => {
       alert('Cevap gönderilirken hata oluştu.')
     }
   }
+const handleDeleteAnswer = async (answerId) => {
+  const confirm = window.confirm('Bu cevabı silmek istediğinizden emin misiniz?')
+  if (!confirm) return
+
+  try {
+    const token = localStorage.getItem('token')
+    await API.delete(`/answers/${answerId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    fetchDetail() // Sayfayı güncelle
+  } catch (err) {
+    console.error('Cevap silinemedi:', err)
+    alert('Silme işlemi başarısız oldu.')
+  }
+}
+
 
   // 🔁 Cevap güncelleme
   const handleUpdateAnswer = async (answerId) => {
@@ -104,7 +121,6 @@ const QuestionDetail = () => {
         <ul>
           {question.answers.map((answer) => {
             console.log('answer.author:', answer.author)
-            const isOwner = isAnswerOwner(answer)
 
             return (
               <li key={answer._id} style={{ marginBottom: '10px' }}>
@@ -121,16 +137,23 @@ const QuestionDetail = () => {
                       Yanıtlayan: {answer.author?.name || 'Anonim'} •{' '}
                       {new Date(answer.createdAt).toLocaleString()}
                     </small>
-                    {isOwner && (
-                      <div>
-                        <button onClick={() => {
-                          setEditingAnswerId(answer._id)
-                          setEditedContent(answer.content)
-                        }}>
-                          Güncelle
-                        </button>
-                      </div>
-                    )}
+                    {isAnswerOwner(answer) && (
+  <div>
+    <button onClick={() => {
+      setEditingAnswerId(answer._id)
+      setEditedContent(answer.content)
+    }}>
+      Güncelle
+    </button>
+
+    <button
+      style={{ marginLeft: '10px', color: 'red' }}
+      onClick={() => handleDeleteAnswer(answer._id)}
+    >
+      Sil
+    </button>
+  </div>
+)}
                   </>
                 )}
               </li>
