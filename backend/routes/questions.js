@@ -40,6 +40,4 @@ router
   .get(getQuestion)
   .delete(/*cookieMiddleware,csrfProtection,protect*/protect, deleteQuestion);
 
-router.put('/:id/upvote', /*cookieMiddleware,csrfProtection,protect*/ protect, upvoteQuestion);
-
 module.exports = router;

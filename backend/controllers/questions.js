@@ -205,50 +205,6 @@ exports.deleteQuestion = async (req, res, next) => {
   }
 };
 
-// @desc    Upvote a question
-// @route   PUT /api/questions/:id/upvote
-// @access  Private
-exports.upvoteQuestion = async (req, res, next) => {
-  try {
-    const question = await Question.findById(req.params.id);
-
-    if (!question) {
-      return next(new ErrorResponse("Question not found", 404));
-    }
-
-    // Check if user has already upvoted this question
-    const existingVote = await Vote.findOne({
-      user: req.user.id,
-      refType: "Question",
-      refId: question._id,
-    });
-
-    if (existingVote) {
-      return next(
-        new ErrorResponse("You have already upvoted this question", 400)
-      );
-    }
-
-    // Create vote record
-    await Vote.create({
-      user: req.user.id,
-      refType: "Question",
-      refId: question._id,
-    });
-
-    // Increment upvotes
-    question.upvotes += 1;
-    await question.save();
-
-    res.status(200).json({
-      success: true,
-      data: question,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
 // @desc    Search questions
 // @route   GET /api/questions/search
 // @access  Public
