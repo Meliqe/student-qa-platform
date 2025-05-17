@@ -216,23 +216,22 @@ exports.searchQuestions = async (req, res, next) => {
       return next(new ErrorResponse("Please provide a search keyword", 400));
     }
 
-    // Search in title and content
-    const questions = await Question.find({
-      $or: [
-        { title: { $regex: keyword, $options: "i" } },
-        { content: { $regex: keyword, $options: "i" } },
-      ],
-    })
-      .populate({
-        path: "author",
-        select: "name",
-      })
-      .sort("-createdAt");
+    // 🔧 Normalize: boşlukları ve noktalama işaretlerini kaldır, küçük harfe çevir
+    const normalizedKeyword = keyword.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+    const questions = await Question.find().populate('author', 'name').sort('-createdAt');
+
+    // 🔍 İçerik ve başlıkta normalize edilmiş şekilde eşleşme ara
+    const filtered = questions.filter((q) => {
+      const normTitle = q.title.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      const normContent = q.content.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      return normTitle.includes(normalizedKeyword) || normContent.includes(normalizedKeyword);
+    });
 
     res.status(200).json({
       success: true,
-      count: questions.length,
-      data: questions,
+      count: filtered.length,
+      data: filtered,
     });
   } catch (err) {
     next(err);
