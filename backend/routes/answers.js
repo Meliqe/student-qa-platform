@@ -26,7 +26,7 @@ router
   .delete(/*cookieMiddleware,csrfProtection,protect*/protect, deleteAnswer);
 
 router.put('/:id/upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, upvoteAnswer);
-router.put('/:id/best', /*cookieMiddleware,csrfProtection,protect*/ markBestAnswer);
+router.put('/:answerId/best/:questionId',/*cookieMiddleware,csrfProtection,protect*/ protect, markBestAnswer)
 
 router.delete('/:id/remove-upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, removeAnswerUpvote);
 

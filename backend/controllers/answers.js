@@ -185,7 +185,7 @@ exports.removeAnswerUpvote = async (req, res, next) => {
 exports.markBestAnswer = async (req, res, next) => {
   try {
     const question = await Question.findById(req.params.questionId);
-    const answer = await Answer.findById(req.params.id);
+    const answer = await Answer.findById(req.params.answerId);
 
     if (!question || !answer) {
       return next(new ErrorResponse('Question or answer not found', 404));
