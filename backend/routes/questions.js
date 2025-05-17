@@ -4,11 +4,10 @@ const {
   getQuestion,
   getQuestionBySlug,
   createQuestion,
-  updateQuestion,
   deleteQuestion,
-  upvoteQuestion,
   getTags,
-  searchQuestions
+  searchQuestions,
+  getQuestionsByTag
 } = require('../controllers/questions');
 const { csrfProtection, cookieMiddleware } = require('../middleware/csrf');
 const { protect, authorize } = require('../middleware/auth');
@@ -23,6 +22,7 @@ router.use('/:questionId/answers', answerRouter);
 
 // Get all tags
 router.get('/tags', getTags);
+router.get('/by-tag', getQuestionsByTag)
 
 // Search questions
 router.get('/search', searchQuestions);

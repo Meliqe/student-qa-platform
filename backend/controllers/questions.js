@@ -254,3 +254,28 @@ exports.getTags = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Get questions by tag
+// @route   GET /api/questions/by-tag?tag=javascript
+// @access  Public
+exports.getQuestionsByTag = async (req, res, next) => {
+  try {
+    const { tag } = req.query;
+
+    if (!tag) {
+      return next(new ErrorResponse("Please provide a tag name", 400));
+    }
+
+    const questions = await Question.find({ tags: tag })
+      .populate({ path: 'author', select: 'name' })
+      .sort('-createdAt');
+
+    res.status(200).json({
+      success: true,
+      count: questions.length,
+      data: questions,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
