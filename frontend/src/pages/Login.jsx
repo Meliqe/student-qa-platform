@@ -23,7 +23,12 @@ const Login = () => {
 
       setUser(user)
 
-      navigate('/')
+      if (user.role === 'admin') {
+  navigate('/admin')
+} else {
+  navigate('/')
+}
+
     } catch (err) {
       console.error('Giriş hatası:', err)
       alert('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.')
