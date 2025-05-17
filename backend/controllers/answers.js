@@ -118,7 +118,12 @@ exports.upvoteAnswer = async (req, res, next) => {
       return next(new ErrorResponse('Answer not found', 404));
     }
 
-    // Check if user has already upvoted this answer
+    // ❌ Kendi cevabına oy verme
+    if (answer.author.toString() === req.user.id) {
+      return next(new ErrorResponse('Kendi cevabınıza oy veremezsiniz', 403));
+    }
+
+    // ✅ Daha önce oy vermiş mi kontrolü
     const existingVote = await Vote.findOne({
       user: req.user.id,
       refType: 'Answer',
@@ -126,17 +131,17 @@ exports.upvoteAnswer = async (req, res, next) => {
     });
 
     if (existingVote) {
-      return next(new ErrorResponse('You have already upvoted this answer', 400));
+      return next(new ErrorResponse('Bu cevaba zaten oy verdiniz', 400));
     }
 
-    // Create vote record
+    // ✅ Oy kaydı oluştur
     await Vote.create({
       user: req.user.id,
       refType: 'Answer',
       refId: answer._id
     });
 
-    // Increment upvotes
+    // 🔼 Oy sayısını artır
     answer.upvotes += 1;
     await answer.save();
 

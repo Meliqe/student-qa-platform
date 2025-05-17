@@ -8,7 +8,7 @@ import 'react-quill/dist/quill.snow.css'
 const QuestionDetail = () => {
   const { id } = useParams()
   const { user } = useContext(UserContext)
-
+  const [voting, setVoting] = useState({})
   const [question, setQuestion] = useState(null)
   const [newAnswer, setNewAnswer] = useState('')
   const [editingAnswerId, setEditingAnswerId] = useState(null)
@@ -53,7 +53,7 @@ const QuestionDetail = () => {
     fetchDetail()
   }, [id])
   console.log('user:', user)
-  // ✏️ Cevap ekleme
+
   const handleSubmit = async () => {
     if (!newAnswer.trim()) return alert('Boş cevap gönderilemez.')
 
@@ -87,8 +87,6 @@ const handleDeleteAnswer = async (answerId) => {
   }
 }
 
-
-  // 🔁 Cevap güncelleme
   const handleUpdateAnswer = async (answerId) => {
     if (!editedContent.trim()) return alert('Boş içerik gönderilemez.')
 
@@ -107,80 +105,136 @@ const handleDeleteAnswer = async (answerId) => {
     }
   }
 
-  if (!question) return <p>Yükleniyor...</p>
+  const handleUpvote = async (answerId) => {
+  try {
+    setVoting(prev => ({ ...prev, [answerId]: true }))
+    const token = localStorage.getItem('token')
+    await API.put(`/answers/${answerId}/upvote`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    fetchDetail()
+  } catch (err) {
+    alert('Zaten oy verdiniz veya hata oluştu.')
+    console.error(err)
+  } finally {
+    setVoting(prev => ({ ...prev, [answerId]: false }))
+  }
+}
 
-  return (
-    <div>
-      <h2>{question.title}</h2>
-      <div dangerouslySetInnerHTML={{ __html: question.content }} />
+const handleRemoveUpvote = async (answerId) => {
+  try {
+    setVoting(prev => ({ ...prev, [answerId]: true }))
+    const token = localStorage.getItem('token')
+    await API.delete(`/answers/${answerId}/remove-upvote`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    fetchDetail()
+  } catch (err) {
+    alert('Oyunuz zaten yok veya hata oluştu.')
+    console.error(err)
+  } finally {
+    setVoting(prev => ({ ...prev, [answerId]: false }))
+  }
+}
 
-      <hr />
 
-      <h3>Cevaplar</h3>
-      {question.answers?.length > 0 ? (
-        <ul>
-          {question.answers.map((answer) => {
-            console.log('answer.author:', answer.author)
+if (!question) return <p>Yükleniyor...</p>
 
-            return (
-              <li key={answer._id} style={{ marginBottom: '10px' }}>
-                {editingAnswerId === answer._id ? (
-                  <div>
-                    <ReactQuill value={editedContent} onChange={setEditedContent} />
-                    <button onClick={() => handleUpdateAnswer(answer._id)}>Kaydet</button>
-                    <button onClick={() => setEditingAnswerId(null)}>İptal</button>
-                  </div>
-                ) : (
-                  <>
-                    <div dangerouslySetInnerHTML={{ __html: answer.content }} />
-                    <small>
-                      Yanıtlayan: {answer.author?.name || 'Anonim'} •{' '}
-                      {new Date(answer.createdAt).toLocaleString()}
-                    </small>
-                    {isAnswerOwner(answer) && (
+return (
   <div>
-    <button onClick={() => {
-      setEditingAnswerId(answer._id)
-      setEditedContent(answer.content)
-    }}>
-      Güncelle
-    </button>
+    <h2>{question.title}</h2>
+    <div dangerouslySetInnerHTML={{ __html: question.content }} />
 
-    <button
-      style={{ marginLeft: '10px', color: 'red' }}
-      onClick={() => handleDeleteAnswer(answer._id)}
-    >
-      Sil
-    </button>
+    <hr />
+
+    <h3>Cevaplar</h3>
+    {question.answers?.length > 0 ? (
+      <ul>
+        {question.answers.map((answer) => (
+          <li key={answer._id} style={{ marginBottom: '20px' }}>
+            {editingAnswerId === answer._id ? (
+              <div>
+                <ReactQuill value={editedContent} onChange={setEditedContent} />
+                <button onClick={() => handleUpdateAnswer(answer._id)}>Kaydet</button>
+                <button onClick={() => setEditingAnswerId(null)}>İptal</button>
+              </div>
+            ) : (
+              <>
+                <div dangerouslySetInnerHTML={{ __html: answer.content }} />
+                <small>
+                  Yanıtlayan: {answer.author?.name || 'Anonim'} •{' '}
+                  {new Date(answer.createdAt).toLocaleString()}
+                </small>
+
+                {isAnswerOwner(answer) && (
+                  <div style={{ marginTop: '5px' }}>
+                    <button onClick={() => {
+                      setEditingAnswerId(answer._id)
+                      setEditedContent(answer.content)
+                    }}>
+                      Güncelle
+                    </button>
+
+                    <button
+                      style={{ marginLeft: '10px', color: 'red' }}
+                      onClick={() => handleDeleteAnswer(answer._id)}
+                    >
+                      Sil
+                    </button>
+                  </div>
+                )}
+
+                {/* Oy verme butonları */}
+                <div style={{ marginTop: '10px' }}>
+                  <strong>Oy Sayısı:</strong> {answer.upvotes}
+                  {/*Oy verme butonları (sadece başkalarının cevaplarına gösterilir) */}
+{user && !isAnswerOwner(answer) && (
+  <div style={{ marginTop: '10px' }}>
+    <strong>Oy Sayısı:</strong> {answer.upvotes}
+    <div style={{ marginTop: '5px' }}>
+      <button
+        disabled={voting[answer._id]}
+        onClick={() => handleUpvote(answer._id)}
+      >
+        Oy Ver
+      </button>
+      <button
+        disabled={voting[answer._id]}
+        onClick={() => handleRemoveUpvote(answer._id)}
+        style={{ marginLeft: '8px' }}
+      >
+        Oyu Geri Al
+      </button>
+    </div>
   </div>
 )}
-                  </>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-      ) : (
-        <p>Henüz cevap yok.</p>
-      )}
+                </div>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Henüz cevap yok.</p>
+    )}
 
-      <hr />
+    <hr />
 
-      <h3>Cevap Yaz</h3>
-      {user ? (
-        <div>
-          <ReactQuill value={newAnswer} onChange={setNewAnswer} />
-          <button onClick={handleSubmit} style={{ marginTop: '10px' }}>
-            Gönder
-          </button>
-        </div>
-      ) : (
-        <p style={{ color: 'gray' }}>
-          Cevap yazmak için <strong>giriş yapmalısınız</strong>.
-        </p>
-      )}
-    </div>
-  )
+    <h3>Cevap Yaz</h3>
+    {user ? (
+      <div>
+        <ReactQuill value={newAnswer} onChange={setNewAnswer} />
+        <button onClick={handleSubmit} style={{ marginTop: '10px' }}>
+          Gönder
+        </button>
+      </div>
+    ) : (
+      <p style={{ color: 'gray' }}>
+        Cevap yazmak için <strong>giriş yapmalısınız</strong>.
+      </p>
+    )}
+  </div>
+)
 }
 
 export default QuestionDetail

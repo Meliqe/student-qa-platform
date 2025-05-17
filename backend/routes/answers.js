@@ -28,6 +28,6 @@ router
 router.put('/:id/upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, upvoteAnswer);
 router.put('/:id/best', /*cookieMiddleware,csrfProtection,protect*/ markBestAnswer);
 
-router.delete('/:id/upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, removeAnswerUpvote);
+router.delete('/:id/remove-upvote',/*cookieMiddleware,csrfProtection,protect*/ protect, removeAnswerUpvote);
 
 module.exports = router;
