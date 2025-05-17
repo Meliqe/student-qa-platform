@@ -52,7 +52,7 @@ const Questions = () => {
 
             {/* Bilgiler */}
             <small>
-              Soran: {q.author?.name || 'Bilinmiyor'} • {new Date(q.createdAt).toLocaleString()} • Oy: {q.upvotes ?? 0}
+              Soran: {q.author?.name || 'Bilinmiyor'} • {new Date(q.createdAt).toLocaleString()}
             </small>
           </div>
         ))
