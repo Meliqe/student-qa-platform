@@ -21,7 +21,7 @@ const Login = () => {
       localStorage.setItem('token', token)
       localStorage.setItem('user', JSON.stringify(fixedUser))
 
-      setUser(user)
+      setUser(fixedUser)
 
       if (user.role === 'admin') {
   navigate('/admin')

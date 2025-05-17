@@ -8,7 +8,7 @@ const UserSession = require('../models/UserSession');
 // @access  Private/Admin
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ role: 'student' });
 
     res.status(200).json({
       success: true,
