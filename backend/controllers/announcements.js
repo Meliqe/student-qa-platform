@@ -1,4 +1,6 @@
 const Announcement = require('../models/Announcement');
+const fs = require('fs');
+const path = require('path');
 
 // @desc    Get all announcements
 // @route   GET /api/announcements
@@ -54,47 +56,50 @@ exports.getAnnouncement = async (req, res, next) => {
 // @access  Private/Admin
 exports.createAnnouncement = async (req, res, next) => {
   try {
-    // Add user to req.body
-    req.body.createdBy = req.user.id;
+    req.body.createdBy = req.user.id
 
-    const announcement = await Announcement.create(req.body);
+    if (req.file) {
+      req.body.imageUrl = `/uploads/announcements/${req.file.filename}`
+    }
+
+    const announcement = await Announcement.create(req.body)
 
     res.status(201).json({
       success: true,
       data: announcement
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 // @desc    Update announcement
 // @route   PUT /api/announcements/:id
 // @access  Private/Admin
 exports.updateAnnouncement = async (req, res, next) => {
   try {
-    let announcement = await Announcement.findById(req.params.id);
-
+    let announcement = await Announcement.findById(req.params.id)
     if (!announcement) {
-      return res.status(404).json({
-        success: false,
-        error: 'Announcement not found'
-      });
+      return res.status(404).json({ success: false, error: 'Not found' })
+    }
+
+    if (req.file) {
+      req.body.imageUrl = `/uploads/announcements/${req.file.filename}`
     }
 
     announcement = await Announcement.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
-    });
+    })
 
     res.status(200).json({
       success: true,
       data: announcement
-    });
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
-};
+}
 
 // @desc    Delete announcement
 // @route   DELETE /api/announcements/:id
@@ -110,6 +115,16 @@ exports.deleteAnnouncement = async (req, res, next) => {
       });
     }
 
+    // Eğer resim varsa sil
+    if (announcement.imageUrl) {
+      const filePath = path.join(__dirname, '..', announcement.imageUrl)
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error('Resim silinemedi:', err.message)
+        }
+      })
+    }
+
     await announcement.deleteOne();
 
     res.status(200).json({
@@ -120,3 +135,4 @@ exports.deleteAnnouncement = async (req, res, next) => {
     next(err);
   }
 };
+

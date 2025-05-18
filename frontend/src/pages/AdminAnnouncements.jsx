@@ -1,4 +1,3 @@
-// pages/AdminAnnouncements.jsx
 import { useEffect, useState } from 'react'
 import API from '../api/axios'
 import AnnouncementModal from '../components/AnnouncementModal'
@@ -31,20 +30,20 @@ const AdminAnnouncements = () => {
     setIsModalOpen(true)
   }
 
-  const handleSave = async (announcement) => {
+  const handleSave = async (formData, id) => {
     try {
       const token = localStorage.getItem('token')
-      if (announcement._id) {
-        // Güncelleme
-        await API.put(`/announcements/${announcement._id}`, announcement, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      } else {
-        // Yeni oluşturma
-        await API.post('/announcements', announcement, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
       }
+
+      if (id) {
+        await API.put(`/announcements/${id}`, formData, { headers })
+      } else {
+        await API.post('/announcements', formData, { headers })
+      }
+
       setIsModalOpen(false)
       fetchAnnouncements()
     } catch (err) {
@@ -75,6 +74,18 @@ const AdminAnnouncements = () => {
           <div key={a._id} style={{ border: '1px solid #ccc', padding: '15px', borderRadius: '8px' }}>
             <h4>{a.title}</h4>
             <p>{a.content}</p>
+            {a.imageUrl && (
+              <img
+                src={`http://localhost:5000${a.imageUrl}`}
+                alt="duyuru görseli"
+                style={{
+                  width: '100%',
+                  maxHeight: '200px',
+                  objectFit: 'cover',
+                  marginBottom: '10px'
+                }}
+              />
+            )}
             <small>Oluşturan: {a.createdBy?.name || 'Bilinmiyor'}</small><br />
             <small>{new Date(a.createdAt).toLocaleString()}</small><br />
             <button onClick={() => openEditModal(a)} style={{ marginRight: '10px' }}>Güncelle</button>

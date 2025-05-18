@@ -50,7 +50,7 @@ const MyAnswers = () => {
       <ul>
         {answers.map((answer) => (
           <li key={answer._id} style={{ marginBottom: '20px' }}>
-            <Link to={`/questions/${answer.question.slug}`} style={{ fontWeight: 'bold', color: '#4A6EF3' }}>
+            <Link to={`/questions/${answer.question._id}`} style={{ fontWeight: 'bold', color: '#4A6EF3' }}>
               {answer.question.title}
             </Link>
             <div dangerouslySetInnerHTML={{ __html: answer.content }} />

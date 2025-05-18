@@ -25,7 +25,7 @@ import AdminUsers from './pages/AdminUsers'
 import AdminStats from './pages/AdminStats'
 import AdminVisits from './pages/AdminVisits'
 import AdminAnnouncements from './pages/AdminAnnouncements'
-
+import PublicAnnouncements from './pages/PublicAnnouncements'
 // 👤 Kullanıcı layout'u
 const UserLayout = ({ children }) => (
   <>
@@ -70,7 +70,7 @@ function App() {
     <Routes>
       {/* Giriş sayfası (layout yok) */}
       <Route path="/login" element={<Login />} />
-
+      <Route path="/announcements" element={<PublicAnnouncements />} />
       {/* 👤 Kullanıcı alanı */}
       <Route path="/" element={<UserLayout><Home /></UserLayout>} />
       <Route path="/register" element={<UserLayout><Register /></UserLayout>} />

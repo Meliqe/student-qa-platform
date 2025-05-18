@@ -12,6 +12,10 @@ const AnnouncementSchema = new mongoose.Schema({
     required: [true, 'Please add content'],
     trim: true
   },
+  imageUrl: {
+  type: String,
+  default: null
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

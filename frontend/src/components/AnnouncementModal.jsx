@@ -3,23 +3,49 @@ import { useState, useEffect } from 'react'
 const AnnouncementModal = ({ isOpen, onClose, onSave, initialData }) => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [image, setImage] = useState(null)
+  const [preview, setPreview] = useState(null)
 
   useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title || '')
-      setContent(initialData.content || '')
-    } else {
-      setTitle('')
-      setContent('')
+    if (isOpen) {
+      if (initialData) {
+        setTitle(initialData.title || '')
+        setContent(initialData.content || '')
+        setPreview(initialData.imageUrl || null)
+      } else {
+        setTitle('')
+        setContent('')
+        setPreview(null)
+      }
+      setImage(null)
     }
-  }, [initialData])
+  }, [isOpen]) // ✅ Modal her açıldığında tetiklenir
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    setImage(file)
+    if (file) {
+      setPreview(URL.createObjectURL(file))
+    }
+  }
 
   const handleSubmit = () => {
     if (!title.trim() || !content.trim()) {
       alert('Başlık ve içerik boş olamaz.')
       return
     }
-    onSave({ title, content, _id: initialData?._id })
+
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('content', content)
+    if (image) {
+      formData.append('image', image)
+    }
+    if (initialData?._id) {
+      formData.append('_id', initialData._id)
+    }
+
+    onSave(formData, initialData?._id)
   }
 
   if (!isOpen) return null
@@ -42,10 +68,16 @@ const AnnouncementModal = ({ isOpen, onClose, onSave, initialData }) => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="İçerik"
-          rows={5}
+          rows={4}
           style={{ width: '100%', marginBottom: '10px' }}
         />
-        <div style={{ textAlign: 'right' }}>
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+        {preview && (
+          <div style={{ marginTop: '10px' }}>
+            <img src={preview} alt="Önizleme" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }} />
+          </div>
+        )}
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
           <button onClick={onClose} style={{ marginRight: '10px' }}>İptal</button>
           <button onClick={handleSubmit}>Kaydet</button>
         </div>
