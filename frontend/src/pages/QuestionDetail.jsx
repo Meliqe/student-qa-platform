@@ -6,13 +6,50 @@ import { UserContext } from '../context/UserContext'
 import 'react-quill/dist/quill.snow.css'
 
 const QuestionDetail = () => {
-  const { id } = useParams()
+  const { param } = useParams()
   const { user } = useContext(UserContext)
   const [voting, setVoting] = useState({})
   const [question, setQuestion] = useState(null)
   const [newAnswer, setNewAnswer] = useState('')
   const [editingAnswerId, setEditingAnswerId] = useState(null)
   const [editedContent, setEditedContent] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+
+  const isObjectId = (value) => /^[a-f\d]{24}$/i.test(value)
+
+  const fetchDetail = async () => {
+    setLoading(true)
+    setNotFound(false)
+    try {
+      const endpoint = isObjectId(param)
+        ? `/questions/${param}`
+        : `/questions/slug/${param}`
+
+      const res = await API.get(endpoint)
+      const data = res.data.data
+
+      if (data.bestAnswer) {
+        const best = data.answers.find(a => a._id === data.bestAnswer)
+        const rest = data.answers.filter(a => a._id !== data.bestAnswer)
+        data.answers = best ? [best, ...rest] : rest
+      }
+
+      setQuestion(data)
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setNotFound(true)
+      } else {
+        console.error('Soru detayı alınamadı:', err)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDetail()
+  }, [param])
 
   const isAnswerOwner = (answer) => {
     try {
@@ -26,34 +63,12 @@ const QuestionDetail = () => {
     return user && question?.author?._id && String(user.id) === String(question.author._id)
   }
 
-  const fetchDetail = async () => {
-    try {
-      const res = await API.get(`/questions/${id}`)
-      const data = res.data.data
-
-      // En iyi cevabı en üste taşı
-      if (data.bestAnswer) {
-        const best = data.answers.find(a => a._id === data.bestAnswer)
-        const rest = data.answers.filter(a => a._id !== data.bestAnswer)
-        data.answers = best ? [best, ...rest] : rest
-      }
-
-      setQuestion(data)
-    } catch (err) {
-      console.error('Soru detayı alınamadı:', err)
-    }
-  }
-
-  useEffect(() => {
-    fetchDetail()
-  }, [id])
-
   const handleSubmit = async () => {
     if (!newAnswer.trim()) return alert('Boş cevap gönderilemez.')
 
     try {
       const token = localStorage.getItem('token')
-      await API.post(`/questions/${id}/answers`, { content: newAnswer }, {
+      await API.post(`/questions/${question._id}/answers`, { content: newAnswer }, {
         headers: { Authorization: `Bearer ${token}` }
       })
       setNewAnswer('')
@@ -129,7 +144,7 @@ const QuestionDetail = () => {
   const handleMarkBest = async (answerId) => {
     try {
       const token = localStorage.getItem('token')
-      await API.put(`/answers/${answerId}/best/${id}`, {}, {
+      await API.put(`/answers/${answerId}/best/${question._id}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       })
       fetchDetail()
@@ -139,7 +154,8 @@ const QuestionDetail = () => {
     }
   }
 
-  if (!question) return <p>Yükleniyor...</p>
+  if (loading) return <p>Yükleniyor...</p>
+  if (notFound) return <p style={{ color: 'red' }}>❌ Bu soru bulunamadı.</p>
 
   return (
     <div>
@@ -152,15 +168,13 @@ const QuestionDetail = () => {
         <ul>
           {question.answers.map((answer) => (
             <li key={answer._id} style={{
-  marginBottom: '20px',
-  border: question.bestAnswer === answer._id ? '2px solid #999' : '1px solid #999',
-  padding: '12px',
-  borderRadius: '6px',
-  backgroundColor: question.bestAnswer === answer._id ? '#444' : '#555',
-  color: '#fff'
-}}>
-
-
+              marginBottom: '20px',
+              border: question.bestAnswer === answer._id ? '2px solid #999' : '1px solid #999',
+              padding: '12px',
+              borderRadius: '6px',
+              backgroundColor: question.bestAnswer === answer._id ? '#444' : '#555',
+              color: '#fff'
+            }}>
               {editingAnswerId === answer._id ? (
                 <div>
                   <ReactQuill value={editedContent} onChange={setEditedContent} />

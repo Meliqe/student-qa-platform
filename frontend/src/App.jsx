@@ -80,7 +80,7 @@ function App() {
         </PrivateRoute>
       } />
       <Route path="/questions" element={<UserLayout><Questions /></UserLayout>} />
-      <Route path="/questions/:id" element={<UserLayout><QuestionDetail /></UserLayout>} />
+      <Route path="/questions/:param" element={<UserLayout><QuestionDetail /></UserLayout>} />
       <Route path="/add-question" element={
         <PrivateRoute>
           <UserLayout><AddQuestion /></UserLayout>
