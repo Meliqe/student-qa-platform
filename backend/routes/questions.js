@@ -33,7 +33,7 @@ router.get('/slug/:slug', getQuestionBySlug);
 router
   .route('/')
   .get(getQuestions)
-  .post(/*cookieMiddleware,csrfProtection,protect*/protect,questionValidation, createQuestion);
+  .post(cookieMiddleware,csrfProtection,protect,questionValidation, createQuestion);
 
 router
   .route('/:id')

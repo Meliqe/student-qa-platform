@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
@@ -11,7 +11,6 @@ const AddQuestion = () => {
   const [tags, setTags] = useState('')
   const navigate = useNavigate()
 
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -22,15 +21,24 @@ const AddQuestion = () => {
     const token = localStorage.getItem('token')
 
     try {
-      await API.post('/questions', {
-        title,
-        content, // Quill'in HTML çıktısı
-        tags: tags.split(',').map(tag => tag.trim())
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const csrfRes = await API.get('/csrf-token', { withCredentials: true })
+      const csrfToken = csrfRes.data.csrfToken
+
+      await API.post(
+        '/questions',
+        {
+          title,
+          content,
+          tags: tags.split(',').map(tag => tag.trim())
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'CSRF-Token': csrfToken
+          },
+          withCredentials: true
         }
-      })
+      )
 
       navigate('/questions')
     } catch (err) {
