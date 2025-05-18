@@ -1,131 +1,129 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import 'react-quill/dist/quill.snow.css'
+import API from './api/axios'
+import socket from './socket'
+
+// Layoutlar ve componentler
 import Navbar from './components/Navbar'
 import AdminNavbar from './components/AdminNavbar'
+import PrivateRoute from './components/PrivateRoute'
+import AdminRoute from './components/AdminRoute'
+
+// Sayfalar
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
-import PrivateRoute from './components/PrivateRoute'
 import Questions from './pages/Questions'
 import QuestionDetail from './pages/QuestionDetail'
 import AddQuestion from './pages/AddQuestion'
 import MyAnswers from './pages/MyAnswers'
 import MyQuestions from './pages/MyQuestions'
-import AdminRoute from './components/AdminRoute'
 import AdminPanel from './pages/AdminPanel'
 import AdminUsers from './pages/AdminUsers'
 import AdminStats from './pages/AdminStats'
 import AdminVisits from './pages/AdminVisits'
 import AdminAnnouncements from './pages/AdminAnnouncements'
 
+// 👤 Kullanıcı layout'u
+const UserLayout = ({ children }) => (
+  <>
+    <Navbar />
+    <div style={{ padding: '20px' }}>
+      {children}
+    </div>
+  </>
+)
+
+// 🛠 Admin layout'u
+const AdminLayout = ({ children }) => (
+  <>
+    <AdminNavbar />
+    <div style={{ padding: '20px' }}>
+      {children}
+    </div>
+  </>
+)
+
 function App() {
-
-  const location = useLocation()
-  const navigate = useNavigate()
-  const isAdminPath = location.pathname.startsWith('/admin')
-
-   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'))
-
-    // Eğer admin ise ve şu an "/" yolundaysa, admin panele yönlendir
-    if (user?.role === 'admin' && location.pathname === '/') {
-      navigate('/admin')
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      socket.auth = { token }
+      socket.connect()
+      socket.on('connect', () => console.log('Socket bağlı:', socket.id))
+      socket.on('disconnect', () => console.log('Socket bağlantısı kesildi'))
     }
-  }, [location.pathname])
+
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (user?.role !== 'admin') {
+      if (!sessionStorage.getItem('visitCounted')) {
+        API.post('/visit')
+          .then(() => sessionStorage.setItem('visitCounted', 'true'))
+          .catch(err => console.error('Ziyaretçi sayacı artırılamadı:', err))
+      }
+    }
+  }, [])
 
   return (
-    <div>
-      {/* 🔁 Admin için farklı navbar */}
-      {isAdminPath ? <AdminNavbar /> : <Navbar />}
+    <Routes>
+      {/* Giriş sayfası (layout yok) */}
+      <Route path="/login" element={<Login />} />
 
-      <div style={{ padding: '20px' }}>
-        <Routes>
-          {/* Normal kullanıcı sayfaları */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/questions" element={<Questions />} />
-          <Route path="/questions/:id" element={<QuestionDetail />} />
-          <Route
-            path="/add-question"
-            element={
-              <PrivateRoute>
-                <AddQuestion />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/my-answers"
-            element={
-              <PrivateRoute>
-                <MyAnswers />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/my-questions"
-            element={
-              <PrivateRoute>
-                <MyQuestions />
-              </PrivateRoute>
-            }
-          />
+      {/* 👤 Kullanıcı alanı */}
+      <Route path="/" element={<UserLayout><Home /></UserLayout>} />
+      <Route path="/register" element={<UserLayout><Register /></UserLayout>} />
+      <Route path="/profile" element={
+        <PrivateRoute>
+          <UserLayout><Profile /></UserLayout>
+        </PrivateRoute>
+      } />
+      <Route path="/questions" element={<UserLayout><Questions /></UserLayout>} />
+      <Route path="/questions/:id" element={<UserLayout><QuestionDetail /></UserLayout>} />
+      <Route path="/add-question" element={
+        <PrivateRoute>
+          <UserLayout><AddQuestion /></UserLayout>
+        </PrivateRoute>
+      } />
+      <Route path="/my-answers" element={
+        <PrivateRoute>
+          <UserLayout><MyAnswers /></UserLayout>
+        </PrivateRoute>
+      } />
+      <Route path="/my-questions" element={
+        <PrivateRoute>
+          <UserLayout><MyQuestions /></UserLayout>
+        </PrivateRoute>
+      } />
 
-          {/* 🛠️ Admin sayfaları */}
-          <Route
-            path="/admin"
-            element={
-              <AdminRoute>
-                <AdminPanel />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminRoute>
-                <AdminUsers />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/stats"
-            element={
-              <AdminRoute>
-                <AdminStats />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/visit"
-            element={
-              <AdminRoute>
-                <AdminVisits />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin/announcements"
-            element={
-              <AdminRoute>
-                <AdminAnnouncements />
-              </AdminRoute>
-            }
-          />
-        </Routes>
-      </div>
-    </div>
+      {/* 🛠 Admin paneli */}
+      <Route path="/admin" element={
+        <AdminRoute>
+          <AdminLayout><AdminPanel /></AdminLayout>
+        </AdminRoute>
+      } />
+      <Route path="/admin/users" element={
+        <AdminRoute>
+          <AdminLayout><AdminUsers /></AdminLayout>
+        </AdminRoute>
+      } />
+      <Route path="/admin/stats" element={
+        <AdminRoute>
+          <AdminLayout><AdminStats /></AdminLayout>
+        </AdminRoute>
+      } />
+      <Route path="/admin/visit" element={
+        <AdminRoute>
+          <AdminLayout><AdminVisits /></AdminLayout>
+        </AdminRoute>
+      } />
+      <Route path="/admin/announcements" element={
+        <AdminRoute>
+          <AdminLayout><AdminAnnouncements /></AdminLayout>
+        </AdminRoute>
+      } />
+    </Routes>
   )
 }
 

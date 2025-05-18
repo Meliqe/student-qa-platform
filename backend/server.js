@@ -7,7 +7,7 @@ const errorHandler = require('./middleware/error');
 const http = require('http');
 const socketIO = require('socket.io');
 const socketAuth = require('./middleware/socketAuth');
-
+const UserSession = require('./models/UserSession');
 // Load env vars
 dotenv.config();
 // Connect to database

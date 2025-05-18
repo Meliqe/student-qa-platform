@@ -22,11 +22,10 @@ router.get('/me/my-answers',protect,getUserAnswers);
 // Protected – Admin only
 router.use(protect);
 router.use(authorize('admin'));
-
+router.get('/online', getOnlineUsers);
 
 router.get('/', getUsers); 
 router.get('/:id', getUser);
-router.get('/online', getOnlineUsers);
 // POST / PUT / DELETE – CSRF ile korunmalı
 router.put('/:id', /*cookieMiddleware,csrfProtection,protect*/ updateUser);
 router.delete('/:id', /*cookieMiddleware,csrfProtection,protect*/ deleteUser);

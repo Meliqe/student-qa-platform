@@ -19,6 +19,7 @@ const socketAuth = async (socket, next) => {
 
     // Kullanıcıyı socket'e ekle
     socket.user = user;
+    console.log('✅ socket.user atandı:', user.name)
     next();
   } catch (err) {
     return next(new Error("WebSocket: Token geçersiz"));
