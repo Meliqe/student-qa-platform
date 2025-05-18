@@ -70,7 +70,7 @@ function App() {
     <Routes>
       {/* Giriş sayfası (layout yok) */}
       <Route path="/login" element={<Login />} />
-      <Route path="/announcements" element={<PublicAnnouncements />} />
+      <Route path="/announcements" element={<UserLayout><PublicAnnouncements /></UserLayout>} />
       {/* 👤 Kullanıcı alanı */}
       <Route path="/" element={<UserLayout><Home /></UserLayout>} />
       <Route path="/register" element={<UserLayout><Register /></UserLayout>} />
