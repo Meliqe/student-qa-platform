@@ -9,6 +9,7 @@ const socketIO = require('socket.io');
 const socketAuth = require('./middleware/socketAuth');
 const UserSession = require('./models/UserSession');
 const path = require('path')
+const galleryRoutes = require('./routes/gallery');
 // Load env vars
 dotenv.config();
 // Connect to database
@@ -71,6 +72,8 @@ app.get('/api/csrf-token', cookieMiddleware, csrfProtection, (req, res) => {
 });
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+
+app.use('/api/gallery', galleryRoutes);
 
 // Mount routes
 app.use('/api/auth', authRoutes);

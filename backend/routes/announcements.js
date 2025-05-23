@@ -8,7 +8,7 @@ const {
 } = require('../controllers/announcements')
 const { protect, authorize } = require('../middleware/auth')
 const { announcementValidation } = require('../middleware/validators')
-const upload = require('../middleware/upload') // Multer middleware'i ekleniyor
+const upload = require('../middleware/upload')
 
 const router = express.Router()
 
