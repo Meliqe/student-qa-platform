@@ -7,14 +7,25 @@ const Navbar = () => {
   const { user, setUser } = useContext(UserContext)
   const navigate = useNavigate()
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    localStorage.removeItem('csrfToken')
-    socket.disconnect()
-    setUser(null)
-    navigate('/')
+  const handleLogout = async () => {
+  try {
+    await fetch('http://localhost:5000/api/auth/logout', {
+      method: 'POST',
+      credentials: 'include', 
+    });
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    socket.disconnect();
+
+    setUser(null);
+    navigate('/');
+  } catch (error) {
+    console.error('Logout failed:', error);
   }
+};
+
 
   return (
     <nav style={{ padding: '10px', borderBottom: '1px solid #ccc', marginBottom: '20px' }}>

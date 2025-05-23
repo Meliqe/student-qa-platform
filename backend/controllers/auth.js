@@ -1,6 +1,6 @@
-const User = require('../models/User');
+const User = require("../models/User");
 
-const UserSession = require('../models/UserSession');
+const UserSession = require("../models/UserSession");
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
@@ -13,7 +13,7 @@ exports.register = async (req, res, next) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'Email already in use'
+        error: "Email already in use",
       });
     }
 
@@ -21,7 +21,7 @@ exports.register = async (req, res, next) => {
     const user = await User.create({
       name,
       email,
-      password
+      password,
     });
 
     sendTokenResponse(user, 201, res);
@@ -41,16 +41,16 @@ exports.login = async (req, res, next) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: 'Please provide an email and password'
+        error: "Please provide an email and password",
       });
     }
 
     // Check for user
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials'
+        error: "Invalid credentials",
       });
     }
 
@@ -59,7 +59,7 @@ exports.login = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials'
+        error: "Invalid credentials",
       });
     }
 
@@ -78,28 +78,30 @@ exports.getMe = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
   } catch (err) {
     next(err);
   }
 };
-
 
 exports.logout = async (req, res, next) => {
   try {
+    res.clearCookie("_csrf", {
+      path: "/", 
+      httpOnly: false, 
+      secure: false, 
+      sameSite: "Strict", 
+    });
 
-    res.clearCookie('_csrf');
-    
     res.status(200).json({
       success: true,
-      message: 'Successfully logged out.'
+      message: "Successfully logged out.",
     });
   } catch (err) {
     next(err);
   }
 };
-
 
 // Get token from model, create cookie and send response
 const sendTokenResponse = (user, statusCode, res) => {
@@ -113,7 +115,7 @@ const sendTokenResponse = (user, statusCode, res) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      role:user.role
-    }
+      role: user.role,
+    },
   });
 };
